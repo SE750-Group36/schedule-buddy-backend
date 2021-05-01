@@ -1,5 +1,7 @@
+require("dotenv").config();
 import express from "express";
 import routes from "./routes";
+import mongoose from "mongoose";
 
 // Setup Express
 const app = express();
@@ -11,7 +13,18 @@ app.use(express.json());
 // Setup our routes.
 app.use("/", routes);
 
-// Start the server running. Once the server is running, the given function will be called, which will
-// log a simple message to the server console. Any console.log() statements in your node.js code
-// can be seen in the terminal window used to run the server.
-app.listen(port, () => console.log(`App server listening on port ${port}!`));
+if (process.env.MONGO_URI == null) {
+    console.log("No connection string in environment variable");
+} else {
+    // Start the DB running. Then, once it's connected, start the server.
+    mongoose
+        .connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+        .then(() =>
+            app.listen(port, () =>
+                console.log(`App server listening on port ${port}!`)
+            )
+        );
+}
