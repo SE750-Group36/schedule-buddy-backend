@@ -2,9 +2,9 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/save", (req, res) => {
     res.json({
-        greeting: "Hello World!",
+        status: "Calendar Saved!",
     });
 });
 

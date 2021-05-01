@@ -2,7 +2,7 @@ import express from "express";
 
 const router = express.Router();
 
-import hello from "./hello";
-router.use("/hello", hello);
+import calendar from "./calendar";
+router.use("/calendar", calendar);
 
 export default router;
