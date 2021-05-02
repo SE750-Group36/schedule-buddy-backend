@@ -20,3 +20,14 @@ export function formatCalendar(icsJSON: any): any[] {
     });
     return events;
 }
+
+export interface Event {     
+    name: String;
+    startDate: Date;
+    endDate: Date;
+} 
+
+export interface Preferences {
+    maxInterval?: number;
+    blockTimes: Event[];
+}
