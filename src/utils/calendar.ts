@@ -5,9 +5,9 @@ export interface Event {
 }
 
 export interface Preferences {
-    startTime: number;
+    startTime?: number;
     maxInterval?: number;
-    blockTimes: Event[];
+    blockTimes?: Event[];
 }
 
 export function formatCalendar(icsJSON: any): Event[] {
@@ -62,8 +62,13 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
         };
     });
 
+
     // add blocked times to the array of current events
-    let blockedTimes: Event[] = events.concat(preferences.blockTimes);
+    let blockedTimes: Event[] = events;
+
+    if (preferences.blockTimes != null){
+         blockedTimes = blockedTimes.concat(preferences.blockTimes);
+    }
 
     // sort blocked times
     blockedTimes.sort(function (a, b) {
@@ -85,7 +90,14 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
         let plannedStartDate = currentTime;
         let plannedEndDate = currentTime + interval;
 
-        if ( // the job can be scheduled at the current time
+        if (blockedTimes.length === 0) {
+            scheduled.push({
+                name: currentJob.name,
+                startDate: plannedStartDate,
+                endDate: plannedEndDate
+            });
+        }
+        else if ( // the job can be scheduled at the current time
             plannedStartDate < blockedTimes[0].startDate &&
             plannedEndDate < blockedTimes[0].startDate
         ) {
@@ -141,7 +153,7 @@ function scheduleBetweenEvents(startDate: number, endDate: number, blockedTimes:
     return blockedTimes[blockedTimes.length - 1].endDate
 }
 
-interface Job {
+export interface Job {
     name: String;
     estimatedTime: number;
     deadline: number;
