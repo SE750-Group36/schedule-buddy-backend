@@ -1,5 +1,15 @@
-//TODO change return type
-export function formatCalendar(icsJSON: any): any[] {
+export interface Event {     
+    name: String;
+    startDate: Number;
+    endDate: Number;
+} 
+
+export interface Preferences {
+    maxInterval?: number;
+    blockTimes: Event[];
+}
+
+export function formatCalendar(icsJSON: any): Event[] {
     let events = icsJSON[2].slice(1).map((x: any[]) => {
         let startDateIndex = -1;
         let endDateIndex = -1;
@@ -12,22 +22,13 @@ export function formatCalendar(icsJSON: any): any[] {
             }
         }
 
-        return {
+        let event: Event = {
             name: x[0],
-            startDate: x[1][startDateIndex][3],
-            endDate: x[1][endDateIndex][3],
+            startDate: new Date(x[1][startDateIndex][3]).getTime(),
+            endDate: new Date(x[1][endDateIndex][3]).getTime(),
         };
+
+        return event;
     });
     return events;
-}
-
-export interface Event {     
-    name: String;
-    startDate: Date;
-    endDate: Date;
-} 
-
-export interface Preferences {
-    maxInterval?: number;
-    blockTimes: Event[];
 }
