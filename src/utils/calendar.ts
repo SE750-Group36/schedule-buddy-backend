@@ -35,6 +35,7 @@ export function formatCalendar(icsJSON: any): Event[] {
 }
 
 export function scheduleJobs( events: Event[], jobs: Job[], preferences: Preferences) {
+    // configure current time
     let currentTime: number;
     if (preferences.startTime != null) {
         currentTime = preferences.startTime;
@@ -42,10 +43,16 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
         let now = Date.now();
         currentTime = now - (now % 3600000) + 3600000;
     }
+
+    // set the interval time
     const interval = preferences.maxInterval
         ? preferences.maxInterval * 3600000
         : 3600000;
+
+    // initialise output variable
     let scheduled: Event[] = [];
+
+    // copy the jobs array into array of jobs to be scheduled.
     const toSchedule = jobs.map((x) => {
         return {
             name: x.name,
@@ -55,74 +62,83 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
         };
     });
 
+    // add blocked times to the array of current events
     let blockedTimes: Event[] = events.concat(preferences.blockTimes);
 
+    // sort blocked times
     blockedTimes.sort(function (a, b) {
         return a.endDate - b.endDate;
     });
 
+    // run algorithm until there is nothing left to be scheduled.
     while (!(toSchedule.length === 0)) {
+        // get rid of any blocked times that end after the current time
         blockedTimes = blockedTimes.filter((x) => x.endDate > currentTime);
-        // Start of the iteration
+
+        // sort the to be scheduled array to find the job with the least slack time
         toSchedule.sort(function (a, b) {
             return a.slackTime - b.slackTime;
         });
-
         let currentJob = toSchedule[0];
 
+        // initialise the start and end dates 
         let plannedStartDate = currentTime;
         let plannedEndDate = currentTime + interval;
 
-        if (
+        if ( // the job can be scheduled at the current time
             plannedStartDate < blockedTimes[0].startDate &&
             plannedEndDate < blockedTimes[0].startDate
         ) {
+            // add job block to the output
             scheduled.push({
                 name: currentJob.name,
                 startDate: plannedStartDate,
                 endDate: plannedEndDate
             });
         } else {
-            let index = scheduleBetweenEvents(plannedStartDate, plannedEndDate, blockedTimes);
-            if (index == null){
-                return null;
-            } else {
-                plannedStartDate = blockedTimes[index].startDate
-                plannedEndDate = blockedTimes[index].startDate + interval
+            // loops through to see where the job can be scheduled
+            let nextStartDate = scheduleBetweenEvents(plannedStartDate, plannedEndDate, blockedTimes);
+        
+                // update the start time and end time to where the job can be scheduled
+                plannedStartDate = nextStartDate
+                plannedEndDate = nextStartDate + interval
 
+                //update the output
                 scheduled.push({
                 name: currentJob.name,
                 startDate: plannedStartDate,
                 endDate: plannedEndDate
-            });
-            }
+                 });
         }
 
+        // update the current time
         currentTime = plannedEndDate
 
+        // update the estimated time to complete
         toSchedule[0].estimatedTime - (interval/3600000)
 
+        // update slack times
         toSchedule.forEach( x=> {
             x.slackTime = x.deadline - currentTime - x.estimatedTime * 3600000
         })
+        //get rid of any of the jobs that are finished
         toSchedule.filter(x=> {x.estimatedTime > 0})
     }
 
     return scheduled;
 }
 
-function scheduleBetweenEvents(startDate: number, endDate: number, blockedTimes: Event[]
-) {
+function scheduleBetweenEvents(startDate: number, endDate: number, blockedTimes: Event[]) {
+    // loop through to see where the job can fit
     for (let i = 0; i < blockedTimes.length - 1; i++) {
         if (
             startDate > blockedTimes[i].endDate &&
             endDate < blockedTimes[i + 1].startDate
         ) {
-            return i;
+            return blockedTimes[i].endDate;
         }
     }
-
-    return null;
+    return blockedTimes[blockedTimes.length - 1].endDate
 }
 
 interface Job {
