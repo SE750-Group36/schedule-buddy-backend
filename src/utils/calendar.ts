@@ -53,7 +53,7 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
     let scheduled: Event[] = [];
 
     // copy the jobs array into array of jobs to be scheduled.
-    const toSchedule = jobs.map((x) => {
+    let toSchedule = jobs.map((x) => {
         return {
             name: x.name,
             estimatedTime: x.estimatedTime,
@@ -79,6 +79,8 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
     while (!(toSchedule.length === 0)) {
         // get rid of any blocked times that end after the current time
         blockedTimes = blockedTimes.filter((x) => x.endDate > currentTime);
+        
+        console.log(JSON.stringify(blockedTimes));
 
         // sort the to be scheduled array to find the job with the least slack time
         toSchedule.sort(function (a, b) {
@@ -133,8 +135,8 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
         toSchedule.forEach( x=> {
             x.slackTime = x.deadline - currentTime - x.estimatedTime * 3600000
         })
-        //get rid of any of the jobs that are finished
-        toSchedule.filter(x=> {x.estimatedTime > 0})
+         //get rid of any of the jobs that are finished
+         toSchedule = toSchedule.filter(x=> {x.estimatedTime > 0}) 
     }
 
     return scheduled;
