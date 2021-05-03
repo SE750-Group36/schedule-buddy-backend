@@ -6,21 +6,21 @@ async function createCalendar(calendar: iCalendar) {
     return dbCalendar;
 }
 
-async function retrieveCalendar(id: String, userId: String) {
+async function retrieveCalendar(id: string, userId: string) {
     return await Calendar.findOne({ _id: id, user_id: userId });
 }
 
-async function retrieveCalendarList(userId: String) {
+async function retrieveCalendarList(userId: string) {
     return await Calendar.find({ user_id: userId });
 }
 
-async function deleteCalendar(id: String, userId: String) {
+async function deleteCalendar(id: string, userId: string) {
     await Calendar.deleteOne({ _id: id, user_id: userId });
 }
 
-export interface iCalendar {
-    userId: String;
-    calendar: JSON;
+interface iCalendar {
+    user_id: string;
+    calendar: Object;
 }
 
 export {
