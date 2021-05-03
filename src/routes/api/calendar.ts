@@ -1,12 +1,14 @@
 import express from "express";
 import {
     createCalender,
+    deleteCalendar,
     retrieveCalendar,
     retrieveCalenderList,
 } from "../../calendar/calender-dao";
 
 const HTTP_CREATED = 201;
 const HTTP_NOT_FOUND = 404;
+const HTTP_NO_CONTENT = 204;
 
 const router = express.Router();
 const fs = require("fs");
@@ -38,6 +40,13 @@ router.get("/:id", async (req, res) => {
 router.get("/", async (req, res) => {
     const userId = req.body.user;
     res.json(await retrieveCalenderList(userId));
+});
+
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params;
+    const userId = req.body.user;
+    await deleteCalendar(id, userId);
+    res.sendStatus(HTTP_NO_CONTENT);
 });
 
 export default router;
