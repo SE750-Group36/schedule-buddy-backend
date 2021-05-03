@@ -35,4 +35,9 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+router.get("/", async (req, res) => {
+    const userId = req.body.user;
+    res.json(await retrieveCalenderList(userId));
+});
+
 export default router;
