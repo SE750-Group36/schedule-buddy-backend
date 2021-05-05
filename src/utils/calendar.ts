@@ -5,7 +5,7 @@ export interface Event {
 }
 
 export interface Preferences {
-    startTime?: number;
+    startTime?: Date;
     maxInterval?: number;
     blockTimes?: Event[];
 }
@@ -15,6 +15,22 @@ export interface Job {
     estimatedTime: number;
     deadline: Date;
 }
+
+function changeTimezone(date : Date, ianatz: string = "Pacific/Auckland") {
+
+    // suppose the date is 12:00 UTC
+    var invdate = new Date(date.toLocaleString('en-US', {
+      timeZone: ianatz
+    }));
+  
+    // then invdate will be 07:00 in Toronto
+    // and the diff is 5 hours
+    var diff = date.getTime() - invdate.getTime();
+  
+    // so 12:00 in Toronto is 17:00 UTC
+    return new Date(date.getTime() - diff); // needs to substract
+  
+  }
 
 export function formatCalendar(icsJSON: any): Event[] {
     let events = icsJSON[2].slice(1).map((x: any[]) => {
@@ -31,8 +47,8 @@ export function formatCalendar(icsJSON: any): Event[] {
 
         let event: Event = {
             name: x[0],
-            startDate: new Date(x[1][startDateIndex][3]),
-            endDate: new Date(x[1][endDateIndex][3])
+            startDate: changeTimezone(new Date(x[1][startDateIndex][3])),
+            endDate: changeTimezone(new Date(x[1][endDateIndex][3]))
         };
 
         return event;
@@ -44,7 +60,8 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
     // configure current time
     let currentTime: number;
     if (preferences.startTime != null) {
-        currentTime = preferences.startTime;
+        currentTime = changeTimezone(preferences.startTime).getTime();
+        console.log(changeTimezone(preferences.startTime));
     } else {
         let now = Date.now();
         currentTime = now - (now % 3600000) + 3600000;
@@ -63,8 +80,8 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
         return {
             name: x.name,
             estimatedTime: x.estimatedTime,
-            deadline: x.deadline,
-            slackTime: x.deadline.getTime() - currentTime - x.estimatedTime * 3600000
+            deadline: changeTimezone(x.deadline),
+            slackTime: changeTimezone(x.deadline).getTime() - currentTime - x.estimatedTime * 3600000
         };
     });
 
@@ -85,8 +102,6 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
     while (!(toSchedule.length === 0)) {
         // get rid of any blocked times that end after the current time
         blockedTimes = blockedTimes.filter((x) => x.endDate.getTime() > currentTime);
-        
-        console.log(JSON.stringify(blockedTimes));
 
         // sort the to be scheduled array to find the job with the least slack time
         toSchedule.sort(function (a, b) {
@@ -152,9 +167,15 @@ export function scheduleJobs( events: Event[], jobs: Job[], preferences: Prefere
 function scheduleBetweenEvents(startDate: number, endDate: number, blockedTimes: Event[]) {
     // loop through to see where the job can fit
     for (let i = 0; i < blockedTimes.length - 1; i++) {
+        console.log("First block " + blockedTimes[i].endDate.getTime())
+        console.log("Second block " + blockedTimes[i+1].endDate.getTime())
+
+        console.log("Start date " + startDate)
+        console.log("End date " + endDate)
+
         if (
-            startDate > blockedTimes[i].endDate.getTime() &&
-            endDate < blockedTimes[i + 1].startDate.getTime()
+            startDate >= blockedTimes[i].endDate.getTime() &&
+            endDate <= blockedTimes[i + 1].startDate.getTime()
         ) {
             return blockedTimes[i].endDate;
         }
