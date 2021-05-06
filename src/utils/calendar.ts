@@ -174,13 +174,12 @@ export function scheduleJobs(
 }
 
 function scheduleBetweenEvents(interval: number, blockedTimes: Event[]) {
-    // we know that we can't schedule it before the first block
-    // so now we start by trying to schedule after the first block
-    let startDate: number = blockedTimes[0].endDate.getTime();
-    let endDate: number = startDate + interval;
-
     // loop through to see where the job can fit
     for (let i = 0; i < blockedTimes.length - 1; i++) {
+        // we know that we can't schedule it before the first block
+        // so now we start by trying to schedule after the first block
+        let startDate: number = blockedTimes[i].endDate.getTime();
+        let endDate: number = startDate + interval;
         if (
             startDate >= blockedTimes[i].endDate.getTime() &&
             endDate <= blockedTimes[i + 1].startDate.getTime()
