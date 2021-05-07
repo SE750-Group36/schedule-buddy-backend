@@ -170,7 +170,7 @@ export function scheduleJobs(
         });
     }
 
-    return scheduled;
+    return addToCalendar(scheduled);
 }
 
 function scheduleBetweenEvents(interval: number, blockedTimes: Event[]) {
@@ -188,4 +188,37 @@ function scheduleBetweenEvents(interval: number, blockedTimes: Event[]) {
         }
     }
     return blockedTimes[blockedTimes.length - 1].endDate;
+}
+
+function addToCalendar(schedule: Event[]) {
+    const ICAL = require("ical.js");
+    var comp = new ICAL.Component(["vcalendar", [], []]);
+    comp.updatePropertyWithValue("prodid", "-//schedule buddy generator");
+
+    schedule.forEach((e) => {
+        const vevent = new ICAL.Component("vevent");
+        const event = new ICAL.Event(vevent);
+
+        event.summary = e.name;
+        event.startDate = new ICAL.Time({
+            year: e.startDate.getFullYear(),
+            month: e.startDate.getMonth() + 1,
+            day: e.startDate.getDay(),
+            minute: e.startDate.getMinutes(),
+            second: e.startDate.getSeconds(),
+            isDate: true,
+        });
+        event.endDate = new ICAL.Time({
+            year: e.endDate.getFullYear(),
+            month: e.endDate.getMonth() + 1,
+            day: e.endDate.getDay(),
+            minute: e.endDate.getMinutes(),
+            second: e.endDate.getSeconds(),
+            isDate: true,
+        });
+
+        comp.addSubcomponent(vevent);
+    });
+
+    return comp;
 }
