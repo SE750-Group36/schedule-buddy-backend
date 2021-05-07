@@ -5,18 +5,27 @@ import {
     retrieveSchedule,
     retrieveScheduleList,
 } from "../../schedule/schedule-dao";
+import { retrieveCalendar } from "../../calendar/calendar-dao";
 
 const HTTP_CREATED = 201;
 const HTTP_NOT_FOUND = 404;
 const HTTP_NO_CONTENT = 204;
 
 const router = express.Router();
-const fs = require("fs");
 
 router.post("/", async (req, res) => {
+    const userId = req.body.user;
+    const calendarId = req.body.calendarId;
+    const preferences = req.body.preferences;
+
+    const calendar = await retrieveCalendar(userId, calendarId);
+
+    // TODO: PERFORM ALGORITHM HERE
+    const schedule = calendar;
+
     const newSchedule = await createSchedule({
-        user_id: req.body.user,
-        schedule: req.body.schedule,
+        user_id: userId,
+        schedule: schedule,
     });
 
     res.status(HTTP_CREATED)

@@ -11,7 +11,6 @@ const HTTP_NOT_FOUND = 404;
 const HTTP_NO_CONTENT = 204;
 
 const router = express.Router();
-const fs = require("fs");
 
 router.post("/", async (req, res) => {
     const newCalendar = await createCalendar({
