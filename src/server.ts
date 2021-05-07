@@ -9,6 +9,11 @@ const port = process.env.PORT || 3001;
 
 // Setup body-parser
 const bodyParser = require("body-parser");
+
+// Allow CORS
+const cors = require("cors");
+app.use(cors());
+
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
