@@ -13,9 +13,9 @@ const HTTP_NO_CONTENT = 204;
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/:calendarId", async (req, res) => {
     const userId = req.body.user;
-    const calendarId = req.body.calendarId;
+    const { calendarId } = req.params;
     const preferences = req.body.preferences;
 
     const calendar = await retrieveCalendar(userId, calendarId);
