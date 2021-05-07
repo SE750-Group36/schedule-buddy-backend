@@ -14,28 +14,32 @@ const HTTP_NO_CONTENT = 204;
 const router = express.Router();
 
 router.post("/:calendarId", async (req, res) => {
-    const userId = req.body.user;
+    const userId = req.headers.user?.toString();
     const { calendarId } = req.params;
     const preferences = req.body.preferences;
 
-    const calendar = await retrieveCalendar(userId, calendarId);
+    if (userId == null) {
+        res.sendStatus(HTTP_NOT_FOUND);
+    } else {
+        const calendar = await retrieveCalendar(userId, calendarId);
 
-    // TODO: PERFORM ALGORITHM HERE
-    const schedule = calendar;
+        // TODO: PERFORM ALGORITHM HERE
+        const schedule = calendar.calender;
 
-    const newSchedule = await createSchedule({
-        user_id: userId,
-        schedule: schedule,
-    });
+        const newSchedule = await createSchedule({
+            user_id: userId,
+            schedule: schedule,
+        });
 
-    res.status(HTTP_CREATED)
-        .header("Location", `/api/schedule/${newSchedule._id}`)
-        .json(newSchedule);
+        res.status(HTTP_CREATED)
+            .header("Location", `/api/schedule/${newSchedule._id}`)
+            .json(newSchedule._id);
+    }
 });
 
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
-    const userId = req.query.user?.toString();
+    const userId = req.headers.user?.toString();
 
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
@@ -51,7 +55,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-    const userId = req.query.user?.toString();
+    const userId = req.headers.user?.toString();
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
@@ -61,7 +65,7 @@ router.get("/", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
     const { id } = req.params;
-    const userId = req.query.user?.toString();
+    const userId = req.headers.user?.toString();
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {

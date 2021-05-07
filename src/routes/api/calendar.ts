@@ -13,19 +13,23 @@ const HTTP_NO_CONTENT = 204;
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-    const newCalendar = await createCalendar({
-        user_id: req.body.user,
-        calendar: req.body.calendar,
-    });
+    const userId = req.headers.user?.toString();
 
-    res.status(HTTP_CREATED)
-        .header("Location", `/api/calendar/${newCalendar._id}`)
-        .json(newCalendar);
+    if (userId != null) {
+        const newCalendar = await createCalendar({
+            user_id: userId,
+            calendar: req.body.calendar,
+        });
+
+        res.status(HTTP_CREATED)
+            .header("Location", `/api/calendar/${newCalendar._id}`)
+            .json(newCalendar);
+    }
 });
 
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
-    const userId = req.query.user?.toString();
+    const userId = req.headers.user?.toString();
 
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
@@ -41,7 +45,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-    const userId = req.query.user?.toString();
+    const userId = req.headers.user?.toString();
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
@@ -51,7 +55,7 @@ router.get("/", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
     const { id } = req.params;
-    const userId = req.query.user?.toString();
+    const userId = req.headers.user?.toString();
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
