@@ -1,10 +1,11 @@
 import express from "express";
 import {
-    createCalendar,
-    deleteCalendar,
-    retrieveCalendar,
-    retrieveCalendarList,
-} from "../../calendar/calendar-dao";
+    createSchedule,
+    deleteSchedule,
+    retrieveSchedule,
+    retrieveScheduleList,
+} from "../../schedule/schedule-dao";
+import { retrieveCalendar } from "../../calendar/calendar-dao";
 
 const HTTP_CREATED = 201;
 const HTTP_NOT_FOUND = 404;
@@ -13,14 +14,23 @@ const HTTP_NO_CONTENT = 204;
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-    const newCalendar = await createCalendar({
-        user_id: req.body.user,
-        calendar: req.body.calendar,
+    const userId = req.body.user;
+    const calendarId = req.body.calendarId;
+    const preferences = req.body.preferences;
+
+    const calendar = await retrieveCalendar(userId, calendarId);
+
+    // TODO: PERFORM ALGORITHM HERE
+    const schedule = calendar;
+
+    const newSchedule = await createSchedule({
+        user_id: userId,
+        schedule: schedule,
     });
 
     res.status(HTTP_CREATED)
-        .header("Location", `/api/calendar/${newCalendar._id}`)
-        .json(newCalendar);
+        .header("Location", `/api/schedule/${newSchedule._id}`)
+        .json(newSchedule);
 });
 
 router.get("/:id", async (req, res) => {
@@ -30,10 +40,10 @@ router.get("/:id", async (req, res) => {
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
-        const calendar = await retrieveCalendar(id, userId);
+        const schedule = await retrieveSchedule(id, userId);
 
-        if (calendar) {
-            res.json(calendar);
+        if (schedule) {
+            res.json(schedule);
         } else {
             res.sendStatus(HTTP_NOT_FOUND);
         }
@@ -45,7 +55,7 @@ router.get("/", async (req, res) => {
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
-        res.json(await retrieveCalendarList(userId));
+        res.json(await retrieveScheduleList(userId));
     }
 });
 
@@ -55,7 +65,7 @@ router.delete("/:id", async (req, res) => {
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
-        await deleteCalendar(id, userId);
+        await deleteSchedule(id, userId);
         res.sendStatus(HTTP_NO_CONTENT);
     }
 });
