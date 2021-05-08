@@ -28,7 +28,7 @@
         "start": "node -r esm ./dist/server.js",
         "server": "npm run start",
         "build": "tsc",
-        "test": "jest"
+        "test": "jest --testEnvironment=node"
     },
     "repository": {
         "type": "git",
