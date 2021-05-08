@@ -6,6 +6,7 @@ import {
     retrieveScheduleList,
 } from "../../schedule/schedule-dao";
 import { retrieveCalendar } from "../../calendar/calendar-dao";
+import { generateSchedule } from "../../schedule/utils";
 
 const HTTP_CREATED = 201;
 const HTTP_NOT_FOUND = 404;
@@ -22,14 +23,15 @@ router.post("/:calendarId", async (req, res) => {
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
-        const calendar = await retrieveCalendar(calendarId, userId);
+        const dbCalendar = await retrieveCalendar(calendarId, userId);
+        //Create deep copy
+        const calendar = JSON.parse(JSON.stringify(dbCalendar));
 
-        // TODO: PERFORM ALGORITHM HERE
-        const schedule = calendar.calendar;
+        const schedule = generateSchedule(calendar, jobs, preferences);
 
         const newSchedule = await createSchedule({
             user_id: userId,
-            schedule: schedule,
+            schedule: JSON.parse(JSON.stringify(schedule)),
         });
 
         res.status(HTTP_CREATED)
