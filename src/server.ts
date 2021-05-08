@@ -8,7 +8,14 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Setup body-parser
-app.use(express.json());
+const bodyParser = require("body-parser");
+
+// Allow CORS
+const cors = require("cors");
+app.use(cors());
+
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Setup our routes.
 app.use("/", routes);
@@ -24,7 +31,7 @@ if (process.env.MONGO_URI == null) {
         })
         .then(() =>
             app.listen(port, () =>
-                console.log(`App server listening on port ${port}!`)
-            )
+                console.log(`App server listening on port ${port}!`),
+            ),
         );
 }
