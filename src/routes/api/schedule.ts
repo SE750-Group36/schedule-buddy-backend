@@ -16,6 +16,7 @@ const router = express.Router();
 router.post("/:calendarId", async (req, res) => {
     const userId = req.headers.user?.toString();
     const calendarId = req.params.calendarId;
+    const jobs = req.body.jobs;
     const preferences = req.body.preferences;
 
     if (userId == null) {
