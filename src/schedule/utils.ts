@@ -1,20 +1,4 @@
-export interface Event {
-    name: String;
-    startDate: Date;
-    endDate: Date;
-}
-
-export interface Preferences {
-    startTime?: Date;
-    maxInterval?: number;
-    blockTimes?: Event[];
-}
-
-export interface Job {
-    name: String;
-    estimatedTime: number;
-    deadline: Date;
-}
+import { iEvent, iJob, iPreferences } from "./interfaces";
 
 function changeTimezone(date: Date, ianatz: string = "Pacific/Auckland") {
     // suppose the date is 12:00 UTC
@@ -32,7 +16,7 @@ function changeTimezone(date: Date, ianatz: string = "Pacific/Auckland") {
     return new Date(date.getTime() - diff); // needs to substract
 }
 
-export function formatCalendar(icsJSON: any): Event[] {
+export function formatCalendar(icsJSON: any): iEvent[] {
     let events = icsJSON[2].slice(1).map((x: any[]) => {
         let startDateIndex = -1;
         let endDateIndex = -1;
@@ -45,7 +29,7 @@ export function formatCalendar(icsJSON: any): Event[] {
             }
         }
 
-        let event: Event = {
+        let event: iEvent = {
             name: x[0],
             startDate: changeTimezone(new Date(x[1][startDateIndex][3])),
             endDate: changeTimezone(new Date(x[1][endDateIndex][3])),
@@ -58,13 +42,13 @@ export function formatCalendar(icsJSON: any): Event[] {
 
 export function scheduleJobs(
     events: Event[],
-    jobs: Job[],
-    preferences: Preferences,
+    jobs: iJob[],
+    preferences: iPreferences,
 ) {
     // configure current time
     let currentTime: number;
-    if (preferences.startTime != null) {
-        currentTime = changeTimezone(preferences.startTime).getTime();
+    if (preferences.startDate != null) {
+        currentTime = changeTimezone(preferences.startDate).getTime();
     } else {
         let now = Date.now();
         currentTime = now - (now % 3600000) + 3600000;
@@ -76,7 +60,7 @@ export function scheduleJobs(
         : 3600000;
 
     // initialise output variable
-    let scheduled: Event[] = [];
+    let scheduled: iEvent[] = [];
 
     // copy the jobs array into array of jobs to be scheduled.
     let toSchedule = jobs.map((x) => {
@@ -92,10 +76,10 @@ export function scheduleJobs(
     });
 
     // add blocked times to the array of current events
-    let blockedTimes: Event[] = events;
+    let blockedTimes: iEvent[] = events;
 
-    if (preferences.blockTimes != null) {
-        blockedTimes = blockedTimes.concat(preferences.blockTimes);
+    if (preferences.blockedTimes != null) {
+        blockedTimes = blockedTimes.concat(preferences.blockedTimes);
     }
 
     // sort blocked times
