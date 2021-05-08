@@ -157,7 +157,7 @@ export function scheduleJobs(
         currentTime = plannedEndDate;
 
         // update the estimated time to complete
-        toSchedule[0].estimatedTime - interval / 3600000;
+        toSchedule[0].estimatedTime -= interval / 3600000;
 
         // update slack times
         toSchedule.forEach((x) => {
@@ -165,9 +165,9 @@ export function scheduleJobs(
                 x.deadline.getTime() - currentTime - x.estimatedTime * 3600000;
         });
         //get rid of any of the jobs that are finished
-        toSchedule = toSchedule.filter((x) => {
-            x.estimatedTime > 0;
-        });
+        toSchedule = toSchedule.filter((x) => 
+            x.estimatedTime > 0
+        );
     }
 
     return addToCalendar(scheduled);
