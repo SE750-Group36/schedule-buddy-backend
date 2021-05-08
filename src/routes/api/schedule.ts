@@ -15,16 +15,17 @@ const router = express.Router();
 
 router.post("/:calendarId", async (req, res) => {
     const userId = req.headers.user?.toString();
-    const { calendarId } = req.params;
+    const calendarId = req.params.calendarId;
+    const jobs = req.body.jobs;
     const preferences = req.body.preferences;
 
     if (userId == null) {
         res.sendStatus(HTTP_NOT_FOUND);
     } else {
-        const calendar = await retrieveCalendar(userId, calendarId);
+        const calendar = await retrieveCalendar(calendarId, userId);
 
         // TODO: PERFORM ALGORITHM HERE
-        const schedule = calendar.calender;
+        const schedule = calendar.calendar;
 
         const newSchedule = await createSchedule({
             user_id: userId,
@@ -33,7 +34,7 @@ router.post("/:calendarId", async (req, res) => {
 
         res.status(HTTP_CREATED)
             .header("Location", `/api/schedule/${newSchedule._id}`)
-            .json(newSchedule._id);
+            .json(newSchedule);
     }
 });
 
