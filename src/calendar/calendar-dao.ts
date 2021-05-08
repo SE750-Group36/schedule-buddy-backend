@@ -18,7 +18,7 @@ async function deleteCalendar(id: string, userId: string) {
     await Calendar.deleteOne({ _id: id, user_id: userId });
 }
 
-interface iCalendar {
+export interface iCalendar {
     user_id: string;
     calendar: Object;
 }
