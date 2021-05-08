@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import express from 'express';
 import routes from "../../../routes";
 require("dotenv").config();
+const fetch = require("node-fetch");
 
 let app, server;
 
