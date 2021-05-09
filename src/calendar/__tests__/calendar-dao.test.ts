@@ -3,7 +3,7 @@ require("dotenv").config();
 import { CalendarTest } from "../schema";
 import { cal1, cal2, cal3 } from "./calender-dao-data";
 
-let calendar1: any, calendar2: any, calendar3: any;
+let calendar1: any, calendar2: any;
 
 /**
  * Before all tests, create an in-memory MongoDB instance so we don't have to test on a real database,
@@ -50,18 +50,18 @@ afterAll(async () => {
 });
 
 it("gets calendars", async () => {
-    const calenders = await CalendarTest.find({});
-    expect(calenders).toBeTruthy();
-    expect(calenders.length).toBe(2);
+    const calendars = await CalendarTest.find({});
+    expect(calendars).toBeTruthy();
+    expect(calendars.length).toBe(2);
 
-    expect(calenders[0].user_id).toBe("testUser");
-    expect(calenders[0].calendar).toStrictEqual(calendar1.calendar);
+    expect(calendars[0].user_id).toBe("testUser");
+    expect(calendars[0].calendar).toStrictEqual(calendar1.calendar);
 
-    expect(calenders[1].user_id).toBe("testUser");
-    expect(calenders[1].calendar).toStrictEqual(calendar2.calendar);
+    expect(calendars[1].user_id).toBe("testUser");
+    expect(calendars[1].calendar).toStrictEqual(calendar2.calendar);
 });
 
-it("gets a single breakfast", async () => {
+it("gets a single calendar", async () => {
     console.log(JSON.stringify(calendar1));
     const calendar = await CalendarTest.findById(calendar1._id);
 
@@ -69,7 +69,7 @@ it("gets a single breakfast", async () => {
     expect(calendar.calendar).toStrictEqual(cal1.calendar);
 });
 
-it("adds a breakfast without crashing", async () => {
+it("adds a calendar without crashing", async () => {
     const calendar = new CalendarTest({
         user_id: cal3.user_id,
         calendar: cal3.calendar,
