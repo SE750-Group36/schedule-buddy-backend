@@ -2,6 +2,7 @@ import { generateSchedule } from "../../../schedule/utils"
 import { oneEventCal } from "../../../examples/oneEventCal";
 import { preferenceExample } from "../../../examples/preferenceExample";
 import { oneJob } from "../../../examples/oneJob";
+const {Component} = require('ical.js');
 
 
 it("Test scheduler one event and one job", async () => {
@@ -9,9 +10,10 @@ it("Test scheduler one event and one job", async () => {
     const preferences = preferenceExample;
     const calendar = oneEventCal;
 
-    const schedule = generateSchedule(calendar, jobs, preferences);
+    let schedule: any = generateSchedule(calendar, jobs, preferences);
 
-    console.log(schedule);
+    const events = schedule.jCal[2].slice(1);
     
-    expect(true);
+    expect(String(events[0][1][1][3])).toMatch("2021-05-11T12:27:00");
+    expect(String(events[0][1][2][3])).toMatch("2021-05-11T13:27:00");
 });
