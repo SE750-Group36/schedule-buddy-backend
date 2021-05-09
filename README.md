@@ -21,10 +21,7 @@ npm i
 
 ### IMPORTANT:
 
-**NOTE: To run the server, you must put the provided .env file provided into the root directory of the project. The file should be provided to you by the tutor, if you do not have this then please feel free to contact <a href="xyan765@aucklanduni.ac.nz">Charlie</a>
-
-**NOTE: This script can only be run in a BASH terminal
-
+To run the server, you must put the provided .env file provided into the root directory of the project. The file should be provided to you by the tutor, if you do not have this then please feel free to contact <a href="xyan765@aucklanduni.ac.nz">Charlie</a>
 
 ```bash
 npm start
@@ -46,12 +43,7 @@ npm start
 
 For unit testing, Jest and Supertest are being used.
 
-### IMPORTANT:
-
-**NOTE: This script can only be run in a BASH terminal
-
 To run tests:
-
 
 ```
 npm test
@@ -60,6 +52,15 @@ npm test
 
 
 # Project Meeting Minutes
+
+## Main responsibilities
+### Backend
+Oliver Chamberlain (ocha817): Algorithm research, Implementing testing with Jest, Algorithm development work.
+Charlie Yang (xyan765): Algorithm development work, Implementation of database tests, setting up endpoints, database work.
+
+### Frontend
+Andrew Donovan (adon946): Redux work, API call work, FE state management, Parsing of ICS files, routing, preference page, Import/export actions.
+Ingemar Watt (iwat053): Styling, Calendar components, Converting ICS data to calendar, routing.
 
 ## 24/3/2021
 
