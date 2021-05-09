@@ -197,7 +197,6 @@ function extractEvents(icsJSON: any): iEvent[] {
 }
 
 function extractEventsFromPreferences(preferences: iPreferences) {
-    console.log(JSON.stringify(preferences));
     let blocked: iEvent[] = [];
 
     let breakTimesFormatted;
