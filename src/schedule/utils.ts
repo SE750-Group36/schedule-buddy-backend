@@ -30,9 +30,7 @@ function scheduleJobs(
     startDate: Date,
     maxInterval: number,
 ) {
-    startDate.setSeconds(0, 0);
-    // configure current time
-    let currentTime: number = changeTimezone(new Date(startDate)).getTime();
+    let currentTime: number = formatStartDate(startDate).getTime();
 
     // set the interval time
     const interval = maxInterval * 3600000;
@@ -145,6 +143,20 @@ function scheduleBetweenEvents(interval: number, blockedTimes: iEvent[]) {
         }
     }
     return blockedTimes[blockedTimes.length - 1].endDate;
+}
+
+function formatStartDate(date: Date) {
+    date.setSeconds(0, 0);
+    date = new Date(new Date(date).toISOString().substring(0, 10));
+    date.setMinutes(0);
+
+    date = new Date(
+        date.toLocaleDateString("en-US", {
+            timeZone: "Pacific/Auckland",
+        }),
+    );
+
+    return date;
 }
 
 function changeTimezone(date: Date, ianatz: string = "Pacific/Auckland") {
