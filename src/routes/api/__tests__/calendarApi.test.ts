@@ -1,8 +1,5 @@
-import { generateSchedule } from "../../../schedule/utils"
-import { oneEventCal } from "../../../examples/oneEventCal";
-import { preferenceExample } from "../../../examples/preferenceExample";
-import { oneJob } from "../../../examples/oneJob";
-
+import { generateSchedule } from "../../../schedule/utils";
+import { oneEventCal, oneJob, preferenceExample } from "./oneEventCal";
 
 it("Test scheduler one event and one job", async () => {
     const jobs = [oneJob];
@@ -12,6 +9,6 @@ it("Test scheduler one event and one job", async () => {
     const schedule = generateSchedule(calendar, jobs, preferences);
 
     console.log(schedule);
-    
+
     expect(true);
 });
