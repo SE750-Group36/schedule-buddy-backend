@@ -1,6 +1,8 @@
+import { start } from "node:repl";
 import { iCalendar } from "../calendar/calendar-dao";
 import { iEvent, iJob, iPreferences } from "./interfaces";
 const ICAL = require("ical.js");
+var set = require("date-fns/set");
 
 export function generateSchedule(
     calendar: iCalendar,
@@ -31,6 +33,7 @@ function scheduleJobs(
     maxInterval: number,
 ) {
     let currentTime: number = formatStartDate(startDate).getTime();
+    currentTime = currentTime < Date.now() ? Date.now() : currentTime;
 
     // set the interval time
     const interval = maxInterval * 3600000;
@@ -147,7 +150,6 @@ function scheduleBetweenEvents(interval: number, blockedTimes: iEvent[]) {
 
 function formatStartDate(date: Date) {
     date.setSeconds(0, 0);
-    date = new Date(new Date(date).toISOString().substring(0, 10));
     date.setMinutes(0);
 
     date = new Date(
@@ -160,18 +162,13 @@ function formatStartDate(date: Date) {
 }
 
 function changeTimezone(date: Date, ianatz: string = "Pacific/Auckland") {
-    // suppose the date is 12:00 UTC
     var invdate = new Date(
         date.toLocaleString("en-US", {
             timeZone: ianatz,
         }),
     );
 
-    // then invdate will be 07:00 in Toronto
-    // and the diff is 5 hours
     var diff = new Date(date).getTime() - invdate.getTime();
-
-    // so 12:00 in Toronto is 17:00 UTC
     return new Date(new Date(date).getTime() - diff); // needs to substract
 }
 
@@ -201,7 +198,29 @@ function extractEvents(icsJSON: any): iEvent[] {
 
 function extractEventsFromPreferences(preferences: iPreferences) {
     let blocked: iEvent[] = [];
-    const breakTimes = preferences.blockedTimes;
+
+    let breakTimesFormatted;
+    if (preferences.blockedTimes != null) {
+        breakTimesFormatted = preferences.blockedTimes.map((x) => {
+            const date = formatStartDate(new Date(x.breakDate));
+
+            const startDate = set(date, {
+                hours: new Date(x.breakStart).getHours(),
+                minutes: new Date(x.breakStart).getMinutes(),
+            });
+
+            const endDate = set(date, {
+                hours: new Date(x.breakEnd).getHours(),
+                minutes: new Date(x.breakEnd).getMinutes(),
+            });
+
+            return {
+                breakStart: startDate,
+                breakEnd: endDate,
+                repeats: x.repeats,
+            };
+        });
+    }
 
     let dailyStartTime: Date = new Date(preferences.dailyStartTime);
     let dailyEndTime: Date = new Date(preferences.dailyEndTime);
@@ -221,8 +240,8 @@ function extractEventsFromPreferences(preferences: iPreferences) {
 
     for (let i = 0; i < 100; i++) {
         // append block times for breaks
-        if (breakTimes != null) {
-            breakTimes.forEach((b) => {
+        if (breakTimesFormatted != null) {
+            breakTimesFormatted.forEach((b) => {
                 if (b.repeats == 0 && i == 0) {
                     blocked.push({
                         name: "break",
@@ -230,10 +249,22 @@ function extractEventsFromPreferences(preferences: iPreferences) {
                         endDate: new Date(b.breakEnd),
                     });
                 } else if (b.repeats == 1) {
+                    const start = new Date(b.breakStart);
+                    const end = new Date(b.breakEnd);
+
+                    const startDate = set(Date.now(), {
+                        hours: start.getHours(),
+                        minutes: start.getMinutes(),
+                    });
+                    const endDate = set(Date.now(), {
+                        hours: end.getHours(),
+                        minutes: end.getMinutes(),
+                    });
+
                     blocked.push({
                         name: "break",
-                        startDate: addDays(new Date(b.breakStart), i),
-                        endDate: addDays(new Date(b.breakEnd), i),
+                        startDate: addDays(startDate, i),
+                        endDate: addDays(endDate, i),
                     });
                 } else if (b.repeats == 2) {
                     blocked.push({
