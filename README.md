@@ -55,12 +55,12 @@ npm test
 
 ## Main responsibilities
 ### Backend
-Oliver Chamberlain (ocha817): Algorithm research, Implementing testing with Jest, Algorithm development work.
-Charlie Yang (xyan765): Algorithm development work, Implementation of database tests, setting up endpoints, database work.
+- Oliver Chamberlain (ocha817): Algorithm research, Implementing testing with Jest, Algorithm development work.
+- Charlie Yang (xyan765): Algorithm development work, Implementation of database tests, setting up endpoints, database work.
 
 ### Frontend
-Andrew Donovan (adon946): Redux work, API call work, FE state management, Parsing of ICS files, routing, preference page, Import/export actions.
-Ingemar Watt (iwat053): Styling, Calendar components, Converting ICS data to calendar, routing.
+- Andrew Donovan (adon946): Redux work, API call work, FE state management, Parsing of ICS files, routing, preference page, Import/export actions.
+- Ingemar Watt (iwat053): Styling, Calendar components, Converting ICS data to calendar, routing.
 
 ## 24/3/2021
 
