@@ -1,7 +1,7 @@
 module.exports= {
     presets:[
         [
-            '@babel/preset-env',
+            '@babel/env',
             {targets:
                 {
                     node: 'current',
@@ -9,4 +9,8 @@ module.exports= {
             },
         ],
     ],
+    transform: {
+        '^.+\\.(ts|tsx)?$': 'ts-jest',
+        "^.+\\.(js|jsx)$": "babel-jest",
+    }
 };
