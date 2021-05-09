@@ -1,9 +1,7 @@
 import { generateSchedule } from "../../../schedule/utils"
-import { oneEventCal } from "../../../examples/oneEventCal";
-import { twoEventCal } from "../../../examples/twoEventCal";
+import { oneEventCal, twoEventCal } from "../../../examples/calendarExamples";
 import { preferenceExample } from "../../../examples/preferenceExample";
 import { oneJob } from "../../../examples/oneJob";
-const {Component} = require('ical.js');
 
 
 it("Test scheduler one event and one job", async () => {
